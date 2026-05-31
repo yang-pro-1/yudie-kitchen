@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>雨蝶御用厨房 - 四川家庭菜谱</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --red: #E63946;
+    --orange: #F4A261;
+    --brown: #8B4513;
+    --cream: #FFF8F0;
+    --dark: #2C1810;
+    --gray: #6B6B6B;
+    --light-gray: #F5F5F5;
+    --white: #FFFFFF;
+    --shadow: 0 4px 20px rgba(0,0,0,0.1);
+    --radius: 16px;
+  }
+  html, body { height: 100%; font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif; background: var(--cream); color: var(--dark); overflow-x: hidden; }
+
+  /* 顶部标题栏 */
+  .header {
+    background: linear-gradient(135deg, #E63946 0%, #C1121F 100%);
+    padding: 20px 16px 16px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(230,57,70,0.4);
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .logo-text { color: #fff; font-size: 18px; font-weight: 600; }
+  .logo-sub { color: rgba(255,255,255,0.8); font-size: 12px; }
+  .random-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    transition: all 0.2s;
+  }
+  .random-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.3); }
+  .search-bar {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 22px;
+    padding: 8px 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-bar input {
+    background: transparent; border: none; outline: none;
+    color: #fff; font-size: 14px; flex: 1;
+    placeholder-color: rgba(255,255,255,0.6);
+  }
+  .search-bar input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-icon { font-size: 16px; }
+
+  /* 分类标签 */
+  .category-section { padding: 16px 16px 8px; }
+  .section-title { font-size: 16px; font-weight: 600; color: var(--dark); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .category-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+  .category-scroll::-webkit-scrollbar { display: none; }
+  .cat-chip {
+    flex-shrink: 0;
+    background: var(--white);
+    border: 1.5px solid #E8E8E8;
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .cat-chip.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(230,57,70,0.3);
+  }
+  .cat-chip:active { transform: scale(0.95); }
+
+  /* 今日推荐横幅 */
+  .daily-banner {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #8B4513 0%, #C75B30 100%);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
+  }
+  .daily-banner:active { transform: scale(0.98); }
+  .daily-banner::before {
+    content: '';
+    position: absolute; top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .banner-text { color: #fff; flex: 1; }
+  .banner-label { font-size: 11px; background: rgba(255,255,255,0.2); display: inline-block; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+  .banner-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .banner-desc { font-size: 12px; opacity: 0.85; }
+  .banner-img {
+    width: 80px; height: 80px; border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+  }
+
+  /* 菜品网格 */
+  .recipes-section { padding: 0 16px 100px; }
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .recipe-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeInUp 0.4s ease both;
+  }
+  .recipe-card:active { transform: scale(0.97); }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-img {
+    width: 100%; height: 140px;
+    object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img .card-emoji { font-size: 56px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .spicy-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(230,57,70,0.9);
+    color: #fff; font-size: 10px;
+    padding: 2px 7px; border-radius: 10px;
+  }
+  .fav-btn {
+    position: absolute; top: 8px; left: 8px;
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    border: none; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .fav-btn:active { transform: scale(1.3); }
+  .card-body { padding: 10px 12px 12px; }
+  .card-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .card-meta { display: flex; align-items: center; gap: 8px; }
+  .card-time { font-size: 11px; color: var(--gray); display: flex; align-items: center; gap: 3px; }
+  .card-diff { font-size: 11px; padding: 1px 7px; border-radius: 8px; }
+  .diff-easy { background: #E8F5E9; color: #388E3C; }
+  .diff-med { background: #FFF3E0; color: #F57C00; }
+  .diff-hard { background: #FFEBEE; color: #D32F2F; }
+  .card-tag { font-size: 11px; color: var(--gray); }
+
+  /* 底部 tab */
+  .tab-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-top: 1px solid #EEEEEE;
+    display: flex;
+    padding: 8px 0 env(safe-area-inset-bottom, 8px);
+    z-index: 200;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .tab-item {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: all 0.2s;
+  }
+  .tab-icon { font-size: 22px; line-height: 1; }
+  .tab-label { font-size: 10px; color: #999; }
+  .tab-item.active .tab-label { color: var(--red); }
+
+  /* 详情页遮罩 */
+  .detail-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+  .detail-overlay.open { display: block; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .detail-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .detail-img {
+    width: 100%; height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 90px;
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .detail-img .detail-emoji { font-size: 90px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2)); }
+  .detail-img img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    background: rgba(0,0,0,0.3);
+    border: none; border-radius: 50%;
+    color: #fff; font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .detail-content { padding: 20px 16px 40px; }
+  .detail-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .detail-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .d-badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; }
+  .d-badge-red { background: #FFEBEE; color: #D32F2F; }
+  .d-badge-org { background: #FFF3E0; color: #F57C00; }
+  .d-badge-grn { background: #E8F5E9; color: #388E3C; }
+  .d-badge-blue { background: #E3F2FD; color: #1565C0; }
+  .detail-section { margin-bottom: 20px; }
+  .detail-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; padding-left: 8px; border-left: 3px solid var(--red); }
+  .ingredients-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ingredient-item {
+    background: var(--light-gray);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+  }
+  .ing-name { font-size: 13px; font-weight: 500; }
+  .ing-amount { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .steps-list { list-style: none; }
+  .step-item { display: flex; gap: 12px; margin-bottom: 14px; }
+  .step-num {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    background: var(--red);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    margin-top: 1px;
+  }
+  .step-text { font-size: 14px; line-height: 1.6; color: #333; }
+  .tips-box {
+    background: #FFF8E1;
+    border-left: 3px solid #FFB300;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+    font-size: 13px; color: #5D4037; line-height: 1.6;
+  }
+
+  /* 随机推荐弹窗 */
+  .random-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 400;
+    display: none;
+    align-items: center; justify-content: center;
+  }
+  .random-overlay.open { display: flex; }
+  .random-card {
+    background: var(--white);
+    border-radius: 24px;
+    width: calc(100% - 48px);
+    max-width: 360px;
+    overflow: hidden;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .random-img {
+    width: 100%; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    overflow: hidden;
+  }
+  .random-img .random-emoji { font-size: 80px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2)); }
+  .random-img img { width: 100%; height: 100%; object-fit: cover; }
+  .random-body { padding: 20px; }
+  .random-label { font-size: 12px; color: var(--gray); margin-bottom: 6px; }
+  .random-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .random-desc { font-size: 14px; color: var(--gray); margin-bottom: 16px; line-height: 1.6; }
+  .random-actions { display: flex; gap: 10px; }
+  .btn-primary {
+    flex: 1; background: var(--red); color: #fff;
+    border: none; border-radius: 22px; padding: 12px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:active { transform: scale(0.96); }
+  .btn-secondary {
+    flex: 1; background: var(--light-gray); color: var(--dark);
+    border: none; border-radius: 22px; padding: 12px;
+    font-size: 15px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:active { transform: scale(0.96); }
+
+  /* 收藏页 */
+  .page { display: none; }
+  .page.active { display: block; }
+  .fav-empty { text-align: center; padding: 60px 20px; color: var(--gray); }
+  .fav-empty .empty-icon { font-size: 60px; margin-bottom: 16px; }
+  .fav-empty p { font-size: 15px; }
+
+  /* 加载动画 */
+  .loading-dots { display: flex; gap: 6px; justify-content: center; padding: 40px; }
+  .dot { width: 10px; height: 10px; background: var(--red); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-12px); } }
+
+  /* ============ 购物车样式 ============ */
+  .cart-badge {
+    position: absolute; top: -2px; right: -6px;
+    background: var(--red); color: #fff;
+    font-size: 10px; font-weight: 700;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+  }
+  .cart-badge:empty { display: none; }
+  .add-cart-btn {
+    background: linear-gradient(135deg, #FF6B35, #E63946);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 5px 12px; font-size: 12px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 3px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .add-cart-btn:active { transform: scale(0.92); }
+  .add-cart-btn.added {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+  }
+
+  /* 购物车页面 */
+  .cart-header-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+  }
+  .clear-cart-btn {
+    background: none; border: 1.5px solid #E0E0E0;
+    color: var(--gray); border-radius: 14px;
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .clear-cart-btn:active { background: #FFF0F0; border-color: var(--red); color: var(--red); }
+
+  .cart-item {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 12px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    animation: fadeInUp 0.3s ease both;
+  }
+  .cart-item-img {
+    width: 70px; height: 70px; border-radius: 12px;
+    object-fit: cover; flex-shrink: 0;
+  }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .cart-item-price { font-size: 13px; color: var(--red); font-weight: 600; }
+  .cart-item-cat { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .qty-control {
+    display: flex; align-items: center; gap: 0;
+    background: var(--light-gray); border-radius: 20px;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .qty-btn {
+    width: 28px; height: 28px; border: none; background: transparent;
+    font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.15s; color: var(--dark);
+  }
+  .qty-btn:active { background: #DDD; }
+  .qty-num {
+    width: 30px; text-align: center; font-size: 14px;
+    font-weight: 600; line-height: 28px;
+  }
+  .remove-cart-item {
+    background: none; border: none; color: #CCC;
+    font-size: 18px; cursor: pointer; padding: 4px;
+    flex-shrink: 0; transition: color 0.2s;
+  }
+  .remove-cart-item:active { color: var(--red); }
+
+  /* 购物车底部结算栏 */
+  .cart-footer-bar {
+    position: fixed; bottom: 60px; left: 0; right: 0;
+    background: var(--white); border-top: 1px solid #EEE;
+    padding: 10px 16px; z-index: 190;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-total-info { display: flex; align-items: baseline; gap: 4px; }
+  .cart-total-label { font-size: 13px; color: var(--gray); }
+  .cart-total-price { font-size: 22px; font-weight: 700; color: var(--red); }
+  .cart-total-count { font-size: 12px; color: var(--gray); }
+  .checkout-btn {
+    background: linear-gradient(135deg, var(--red), #C1121F);
+    color: #fff; border: none; border-radius: 22px;
+    padding: 10px 24px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .checkout-btn:active { transform: scale(0.96); }
+
+  /* 购物车空状态 */
+  .cart-empty { text-align: center; padding: 80px 20px; color: var(--gray); }
+  .cart-empty .empty-icon { font-size: 64px; margin-bottom: 16px; }
+  .cart-empty p { font-size: 15px; margin-bottom: 16px; }
+  .cart-empty .go-shop-btn {
+    background: var(--red); color: #fff; border: none;
+    border-radius: 22px; padding: 10px 28px; font-size: 14px; cursor: pointer;
+  }
+
+  /* 详情页加入购物车按钮 */
+  .detail-add-cart {
+    position: sticky; bottom: 0;
+    background: linear-gradient(135deg, #FF6B35, #E63946);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 14px; font-size: 16px; font-weight: 600;
+    cursor: pointer; width: 100%; margin-top: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .detail-add-cart:active { transform: scale(0.98); }
+  .detail-add-cart.added {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+  }
+
+  /* 卡片上的价格标签 */
+  .card-price-tag {
+    font-size: 13px; color: var(--red); font-weight: 700;
+    margin-top: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 主页 -->
+<div id="page-home" class="page active">
+  <!-- 顶部 -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">🍜</div>
+        <div>
+          <div class="logo-text">雨蝶御用厨房</div>
+          <div class="logo-sub">四川家庭菜谱</div>
+        </div>
+      </div>
+      <button class="random-btn" onclick="showRandom()">
+        🎲 今天吃啥
+      </button>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="搜索菜名、食材..." id="search-input" oninput="searchRecipes(this.value)">
+    </div>
+  </div>
+
+  <!-- 分类 -->
+  <div class="category-section">
+    <div class="category-scroll" id="cat-scroll">
+      <div class="cat-chip active" data-cat="all" onclick="filterCat('all', this)">🍽️ 全部</div>
+      <div class="cat-chip" data-cat="荤菜" onclick="filterCat('荤菜', this)">🥩 荤菜</div>
+      <div class="cat-chip" data-cat="素菜" onclick="filterCat('素菜', this)">🥦 素菜</div>
+      <div class="cat-chip" data-cat="汤类" onclick="filterCat('汤类', this)">🍲 汤类</div>
+      <div class="cat-chip" data-cat="小吃" onclick="filterCat('小吃', this)">🍢 小吃</div>
+      <div class="cat-chip" data-cat="火锅" onclick="filterCat('火锅', this)">🫕 火锅</div>
+      <div class="cat-chip" data-cat="凉菜" onclick="filterCat('凉菜', this)">🥗 凉菜</div>
+    </div>
+  </div>
+
+  <!-- 今日推荐 -->
+  <div class="daily-banner" id="daily-banner" onclick="openDetailById(dailyPick)">
+    <div class="banner-text">
+      <div class="banner-label">🌶️ 今日推荐</div>
+      <div class="banner-title" id="daily-name">宫保鸡丁</div>
+      <div class="banner-desc" id="daily-desc">经典川菜，香辣可口</div>
+    </div>
+    <div class="banner-img" id="daily-img">🍗</div>
+  </div>
+
+  <!-- 菜品列表 -->
+  <div class="recipes-section">
+    <div class="section-title">🔥 精选菜谱</div>
+    <div class="recipes-grid" id="recipes-grid"></div>
+  </div>
+</div>
+
+<!-- 收藏页 -->
+<div id="page-fav" class="page">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">❤️</div>
+        <div>
+          <div class="logo-text">我的收藏</div>
+          <div class="logo-sub">喜欢的菜都在这里</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 16px 16px 100px;">
+    <div class="section-title">❤️ 已收藏</div>
+    <div class="recipes-grid" id="fav-grid"></div>
+    <div class="fav-empty" id="fav-empty" style="display:none">
+      <div class="empty-icon">🍽️</div>
+      <p>还没有收藏菜谱哦<br>快去发现好吃的川菜吧！</p>
+    </div>
+  </div>
+</div>
+
+<!-- 购物车页面 -->
+<div id="page-cart" class="page">
+  <div class="header">
+    <div class="header-top">
+      <div class="cart-header-bar" style="width:100%">
+        <div class="logo">
+          <div class="logo-icon">🛒</div>
+          <div>
+            <div class="logo-text">购物车</div>
+            <div class="logo-sub">已选菜品，全部免费</div>
+          </div>
+        </div>
+        <button class="clear-cart-btn" onclick="clearCart()">🗑️ 清空</button>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 16px 16px 140px;">
+    <div class="section-title">🛒 已选 <span id="cart-total-items" style="color:var(--red);font-size:14px">0</span> 道</div>
+    <div id="cart-list"></div>
+    <div class="cart-empty" id="cart-empty" style="display:none">
+      <div class="empty-icon">🛒</div>
+      <p>购物车空空如也~<br>去挑选你喜欢的川菜吧！</p>
+      <button class="go-shop-btn" onclick="switchTab('home')">去选购 →</button>
+    </div>
+  </div>
+
+  <!-- 购物车底部结算栏 -->
+  <div class="cart-footer-bar" id="cart-footer" style="display:none">
+    <div class="cart-total-info">
+      <span class="cart-total-label">合计：</span>
+      <span class="cart-total-price">¥0</span>
+      <span class="cart-total-count" id="cart-count-label"></span>
+    </div>
+    <button class="checkout-btn" onclick="doCheckout()">🎉 确认下单</button>
+  </div>
+</div>
+
+<!-- 菜品详情弹窗 -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-sheet" id="detail-sheet">
+    <div class="detail-img" id="detail-img-wrap">
+      <span id="detail-emoji">🍜</span>
+    </div>
+    <button class="detail-close" onclick="closeDetailBtn()">✕</button>
+    <div class="detail-content">
+      <div class="detail-title" id="detail-title"></div>
+      <div class="detail-badges" id="detail-badges"></div>
+      <div class="detail-section">
+        <h3>食材清单</h3>
+        <div class="ingredients-grid" id="detail-ingredients"></div>
+      </div>
+      <div class="detail-section">
+        <h3>烹饪步骤</h3>
+        <ol class="steps-list" id="detail-steps"></ol>
+      </div>
+      <div class="detail-section" id="tips-section">
+        <h3>🍳 小贴士</h3>
+        <div class="tips-box" id="detail-tips"></div>
+      </div>
+      <button class="detail-add-cart" id="detail-cart-btn" onclick="toggleCartFromDetail()">
+        🛒 加入购物车（免费）
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 随机推荐弹窗 -->
+<div class="random-overlay" id="random-overlay" onclick="closeRandom(event)">
+  <div class="random-card">
+    <div class="random-img" id="random-img-wrap">
+      <span id="random-emoji">🍜</span>
+    </div>
+    <div class="random-body">
+      <div class="random-label">🎲 今天就吃这个！</div>
+      <div class="random-title" id="random-title"></div>
+      <div class="random-desc" id="random-desc"></div>
+      <div class="random-actions">
+        <button class="btn-secondary" onclick="showRandom()">换一个</button>
+        <button class="btn-primary" onclick="openRandomDetail()">查看食谱 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="tab-bar">
+  <div class="tab-item active" id="tab-home" onclick="switchTab('home')">
+    <div class="tab-icon">🏠</div>
+    <div class="tab-label">首页</div>
+  </div>
+  <div class="tab-item" id="tab-cart" onclick="switchTab('cart')">
+    <div class="tab-icon" style="position:relative">
+      🛒
+      <span class="cart-badge" id="cart-badge"></span>
+    </div>
+    <div class="tab-label">购物车</div>
+  </div>
+  <div class="tab-item" id="tab-fav" onclick="switchTab('fav')">
+    <div class="tab-icon">❤️</div>
+    <div class="tab-label">收藏</div>
+  </div>
+</div>
+
+<script>
+// ============== 菜谱数据库 - 42道经典川菜 ==============
+const recipes = [
+  // ===== 荤菜类 =====
+  {
+    id: 1, name: "宫保鸡丁", cat: "荤菜", emoji: "🍗",
+    time: "25分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "经典川菜",
+    img: "images/gongbao_jiding.jpg",
+    desc: "酸甜微辣，鸡肉嫩滑，花生香脆，色香味俱全",
+    ingredients: [
+      {name:"鸡胸肉", amt:"300g"}, {name:"花生米", amt:"80g"}, {name:"干辣椒", amt:"8个"},
+      {name:"葱段", amt:"适量"}, {name:"生姜", amt:"少许"}, {name:"大蒜", amt:"3瓣"},
+      {name:"生抽", amt:"2勺"}, {name:"醋", amt:"1勺"}, {name:"白糖", amt:"1勺"},
+    ],
+    steps: ["鸡胸肉切丁，加盐、生粉、料酒腌制15分钟","锅中热油，花生米小火炒至金黄，盛出备用","油锅烧热，先炒干辣椒和花椒至香","放入鸡丁大火翻炒至变白","加入葱、姜、蒜炒香","加入生抽、醋、糖、淀粉勾兑的调味汁","大火收汁，最后加入花生米翻炒均匀即可"],
+    tips: "花生米最后放，保持脆度。调味汁提前调好，下锅要快炒。"
+  },
+  {
+    id: 2, name: "麻婆豆腐", cat: "荤菜", emoji: "🫘",
+    time: "20分钟", diff: "easy", spicy: "🌶️🌶️🌶️",
+    tag: "麻辣鲜香",
+    img: "images/mapo_doufu.jpg",
+    desc: "麻、辣、鲜、嫩、烫，豆腐滑嫩，肉末鲜香",
+    ingredients: [
+      {name:"嫩豆腐", amt:"400g"}, {name:"猪肉末", amt:"100g"}, {name:"豆瓣酱", amt:"2勺"},
+      {name:"花椒粉", amt:"1茶匙"}, {name:"辣椒粉", amt:"1茶匙"}, {name:"蒜末", amt:"适量"},
+      {name:"淀粉", amt:"1勺"}, {name:"生抽", amt:"1勺"}, {name:"葱花", amt:"适量"}
+    ],
+    steps: ["豆腐切小块，沸水加盐焯水2分钟","锅热油，炒香猪肉末","加豆瓣酱炒出红油","加蒜末辣椒粉炒香","加水放入豆腐块","小火煮3分钟入味","勾芡撒花椒粉葱花"],
+    tips: "用嫩豆腐更滑。花椒粉最后放才香。"
+  },
+  {
+    id: 4, name: "回锅肉", cat: "荤菜", emoji: "🥓",
+    time: "35分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "家常必备",
+    img: "images/huiguo_rou.jpg",
+    desc: "肥而不腻，香辣下饭，四川人最爱的家常菜",
+    ingredients: [{name:"五花肉", amt:"400g"}, {name:"青蒜苗", amt:"200g"}, {name:"豆瓣酱", amt:"2勺"}, {name:"甜面酱", amt:"1勺"}, {name:"生抽", amt:"1勺"}, {name:"白糖", amt:"少许"}, {name:"姜片", amt:"适量"}, {name:"料酒", amt:"2勺"}],
+    steps: ["五花肉整块煮至筷子能插入约20分钟","捞出放凉切薄片","锅不加油放肉片煸炒出油","推开放豆瓣酱甜面酱出油","加蒜苗白段翻炒","加生抽糖调味","放蒜苗绿叶大火炒至断生"],
+    tips: "肉七八分熟就捞，留点韧劲。要把油逼出来才香！"
+  },
+  {
+    id: 5, name: "水煮牛肉", cat: "荤菜", emoji: "🍖",
+    time: "30分钟", diff: "med", spicy: "🌶️🌶️🌶️",
+    tag: "麻辣烫嫩",
+    img: "images/shuizhu_niurou.jpg",
+    desc: "嫩滑牛肉，浇油激香，香气四溢",
+    ingredients: [{name:"牛里脊", amt:"300g"}, {name:"豆芽", amt:"200g"}, {name:"郫县豆瓣", amt:"3勺"}, {name:"干辣椒", amt:"15个"}, {name:"花椒", amt:"2茶匙"}, {name:"蒜末", amt:"适量"}, {name:"淀粉蛋清", amt:"各1份"}],
+    steps: ["牛肉切片加料腌制","豆芽焯水垫底","炒香豆瓣加汤煮沸","下牛肉片变色即捞出","铺豆芽上撒花椒蒜末","浇热油激出香味"],
+    tips: "牛肉变色就捞出别煮老了。浇油是灵魂步骤！"
+  },
+  {
+    id: 9, name: "鱼香肉丝", cat: "荤菜", emoji: "🐟",
+    time: "25分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "酸甜鲜香",
+    img: "images/yuxiang_rousi.jpg",
+    desc: "酸甜咸辣兼具，木耳笋丝配猪肉丝",
+    ingredients: [{name:"猪里脊", amt:"200g"}, {name:"水发木耳", amt:"50g"}, {name:"冬笋/胡萝卜", amt:"100g"}, {name:"泡辣椒", amt:"3个"}, {name:"姜蒜", amt:"适量"}, {name:"生抽醋糖", amt:"各1勺"}],
+    steps: ["里脊切丝加淀粉腌制","木耳冬笋切丝","调鱼香汁(醋糖生抽淀粉)","滑炒肉丝盛出","炒香泡辣椒姜蒜","加配菜翻炒","倒鱼香汁大火炒匀"],
+    tips: "泡椒是关键，酸甜咸辣要均衡。"
+  },
+  {
+    id: 17, name: "干煸肉丝", cat: "荤菜", emoji: "🥩",
+    time: "20分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "焦香油亮",
+    img: "images/ganbian_rousi.jpg",
+    desc: "肉丝干香酥脆，麻辣可口，越嚼越香",
+    ingredients: [{name:"里脊肉", amt:"250g"}, {name:"干辣椒", amt:"10个"}, {name:"花椒", amt:"1茶匙"}, {name:"姜丝", amt:"适量"}, {name:"料酒", amt:"1勺"}, {name:"白糖", amt:"少许"}, {name:"盐", amt:"适量"}],
+    steps: ["里脊肉切粗丝","锅中少油中火煸炒肉丝","炒至水分收干肉丝变金黄","加干辣椒花椒姜丝","继续煸炒至香味四溢","加料酒盐糖调味"],
+    tips: "一定要把水分炒干，才有干煸的口感。"
+  },
+  {
+    id: 18, name: "火爆腰花", cat: "荤菜", emoji: "🐖",
+    time: "25分钟", diff: "hard", spicy: "🌶️🌶️🌶️",
+    tag: "功夫菜",
+    img: "images/bao_huoyao.jpg",
+    desc: "腰花脆嫩，火候精准，川菜师傅的经典考验菜",
+    ingredients: [{name:"猪腰", amt:"2个"}, {name:"泡椒", amt:"5个"}, {name:"芹菜", amt:"100g"}, {name:"蒜片", amt:"适量"}, {name:"姜片", amt:"适量"}, {name:"生抽", amt:"2勺"}, {name:"料酒", amt:"1勺"}],
+    steps: ["猪腰对半剖开去臊筋","表面斜刀交叉花刀再切块","沸水快速焯水10秒捞出","大火宽油烧热爆香配料","下腰花爆炒10秒","加调料翻炒均匀出锅"],
+    tips: "去臊筋是关键，花刀不能切断。全程大火，超过20秒就老了！"
+  },
+  {
+    id: 19, name: "辣子鸡", cat: "荤菜", emoji: "🍗",
+    time: "40分钟", diff: "med", spicy: "🌶️🌶️🌶️",
+    tag: "外酥里嫩",
+    img: "images/lazi_ji.jpg",
+    desc: "鸡肉酥脆，辣椒飘香，满盘红艳",
+    ingredients: [{name:"鸡腿肉", amt:"500g"}, {name:"干辣椒", amt:"50个"}, {name:"花椒", amt:"2勺"}, {name:"白芝麻", amt:"1勺"}, {name:"料酒", amt:"2勺"}, {name:"生粉", amt:"2勺"}],
+    steps: ["鸡腿肉剁小块加料酒生粉腌制","油炸两次至金黄酥脆","留底油炒香大量干辣椒和花椒","倒入炸好的鸡肉翻拌均匀","撒白芝麻出锅"],
+    tips: "要复炸一次才够脆。干辣椒要多才好看又好吃。"
+  },
+  {
+    id: 20, name: "东坡肘子", cat: "荤菜", emoji: "🍖",
+    time: "120分钟", diff: "hard", spicy: "🌶️",
+    tag: "宴客大菜",
+    img: "images/dongpo_zhouzi.jpg",
+    desc: "肥而不腻，耙糯入味，四川传统名菜",
+    ingredients: [{name:"猪前肘", amt:"1只"}, {name:"冰糖", amt:"50g"}, {name:"酱油", amt:"3勺"}, {name:"八角桂皮", amt:"适量"}, {name:"葱结", amt:"2个"}, {name:"姜片", amt:"适量"}],
+    steps: ["猪肘子刮洗干净冷水焯水去血沫","锅中放竹垫防止粘锅","加酱油冰糖香料和没过肘子的水","大火烧开转小火炖90分钟","汤汁浓稠后取出装盘","原汁淋在肘子上即可"],
+    tips: "炖到筷子一插就透才算好。这道菜需要耐心。"
+  },
+  {
+    id: 21, name: "粉蒸肉", cat: "荤菜", emoji: "🍚",
+    time: "60分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "软糯咸香",
+    img: "images/fen_zhengrou.jpg",
+    desc: "米粉裹肉，软糯入味，蒸出来的家常味",
+    ingredients: [{name:"五花肉", amt:"300g"}, {name:"蒸肉米粉", amt:"100g"}, {name:"红薯/南瓜", amt:"200g"}, {name:"豆瓣酱", amt:"1勺"}, {name:"腐乳汁", amt:"1勺"}, {name:"姜末", amt:"适量"}],
+    steps: ["五花肉切片加调料拌匀腌制30分钟","拌入蒸肉米粉让每片都裹上","红薯南瓜切块铺碗底","肉片整齐码放在上面","蒸锅上汽后蒸50-60分钟即可"],
+    tips: "红薯或南瓜吸了肉汁更好吃。米粉超市有卖也可以自制。"
+  },
+  {
+    id: 22, name: "红烧兔肉", cat: "荤菜", emoji: "🐰",
+    time: "50分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "地方特色",
+    img: "images/hongshao_turu.jpg",
+    desc: "兔肉细嫩，麻辣鲜香，四川自贡地区的招牌菜",
+    ingredients: [{name:"兔肉", amt:"600g"}, {name:"豆瓣酱", amt:"2勺"}, {name:"干辣椒", amt:"10个"}, {name:"花椒", amt:"1勺"}, {name:"大蒜", amt:"半头"}, {name:"啤酒", amt:"1罐"}],
+    steps: ["兔肉剁块焯水洗净沥干","锅中热油炒豆瓣酱出红油","加干辣椒花椒蒜瓣炒香","放兔块翻炒至微黄","加啤酒和水没过肉","大火烧开转小火炖35分钟","大火收汁即可"],
+    tips: "用啤酒代替部分水，肉质更嫩更香。"
+  },
+  {
+    id: 23, name: "毛血旺", cat: "荤菜", emoji: "🩸",
+    time: "30分钟", diff: "med", spicy: "🌶️🌶️🌶️",
+    tag: "江湖名菜",
+    img: "images/mao_xuewang.jpg",
+    desc: "麻辣鲜香，食材丰富，一盆吃到撑",
+    ingredients: [{name:"鸭血", amt:"300g"}, {name:"黄豆芽", amt:"200g"}, {name:"午餐肉", amt:"100g"}, {name:"毛肚", amt:"100g"}, {name:"郫县豆瓣", amt:"2勺"}, {name:"火锅底料", amt:"1勺"}],
+    steps: ["鸭血午餐肉切块","豆芽焯水垫大碗底","炒香豆瓣底料加汤煮开","依次放入鸭血午餐肉毛肚","煮熟后全部倒入大碗","撒蒜末干辣椒","浇热油激香"],
+    tips: "食材可以根据喜好调整，加鳝鱼片更地道。"
+  },
+  {
+    id: 24, name: "棒棒鸡", cat: "荤菜", emoji: "🍗",
+    time: "40分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "凉菜荤食",
+    img: "images/bangbang_ji.jpg",
+    desc: "鸡肉撕成条，淋上秘制红油酱汁，麻辣爽口",
+    ingredients: [{name:"鸡胸肉", amt:"400g"}, {name:"花生碎", amt:"2勺"}, {name:"芝麻酱", amt:"2勺"}, {name:"红油", amt:"3勺"}, {name:"花椒油", amt:"1勺"}, {name:"黄瓜丝", amt:"适量"}],
+    steps: ["鸡胸肉加葱姜料酒煮至熟透","捞出浸冰水冷却","用擀面杖拍松后撕成细条","黄瓜丝垫底摆鸡肉条","调酱汁：芝麻酱红油花椒油生抽醋","淋在鸡肉上撒花生碎芝麻"],
+    tips: "用木棍敲打后再撕，更容易入味。"
+  },
+
+  // ===== 素菜类 =====
+  {
+    id: 11, name: "酸辣土豆丝", cat: "素菜", emoji: "🥔",
+    time: "12分钟", diff: "easy", spicy: "🌶️",
+    tag: "家常快手",
+    img: "images/suanla_tudousi.jpg",
+    desc: "清脆爽口酸辣开胃，国民级素菜",
+    ingredients: [{name:"土豆", amt:"2个"}, {name:"干辣椒", amt:"5个"}, {name:"花椒", amt:"适量"}, {name:"醋", amt:"2勺"}, {name:"盐", amt:"适量"}, {name:"蒜葱", amt:"适量"}],
+    steps: ["土豆去皮切丝冲水去淀粉","沸水焯30秒控水","炒香花椒辣椒捞出","大火炒土豆丝","沿锅边淋入醋","加盐蒜葱炒匀出锅"],
+    tips: "冲水去淀粉是脆的关键。醋要沿锅边淋入更香！"
+  },
+  {
+    id: 25, name: "虎皮青椒", cat: "素菜", emoji: "🫑",
+    time: "15分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "米饭杀手",
+    img: "images/hupi_qingjiao.jpg",
+    desc: "表皮起皱，酱汁浓郁，比肉还好吃",
+    ingredients: [{name:"青椒", amt:"6个"}, {name:"蒜末", amt:"2勺"}, {name:"生抽", amt:"2勺"}, {name:"醋", amt:"1勺"}, {name:"白糖", amt:"1茶匙"}, {name:"盐", amt:"适量"}],
+    steps: ["青椒去蒂去籽擦干水分","不放油干煸至表皮起皱变黄","盛出备用","锅加油炒香蒜末","加生抽醋糖调成汁","倒入青椒翻炒均匀即可"],
+    tips: "一定要干煸到起虎皮纹才有灵魂。"
+  },
+  {
+    id: 26, name: "地三鲜", cat: "素菜", emoji: "🥔",
+    time: "20分钟", diff: "easy", spicy: "🌶️",
+    tag: "东北入川版",
+    img: "images/disanxian.jpg",
+    desc: "土豆茄子青椒的组合，鲜香下饭",
+    ingredients: [{name:"土豆", amt:"1个"}, {name:"茄子", amt:"1根"}, {name:"青椒", amt:"2个"}, {name:"蒜末", amt:"适量"}, {name:"生抽", amt:"2勺"}, {name:"蚝油", amt:"1勺"}],
+    steps: ["茄子切块裹淀粉过油","土豆块炸至金黄","青椒稍炸备用","锅留底油炒香蒜末","三种食材一起回锅","加生抽蚝油调味翻炒"],
+    tips: "茄子先腌一下出水就不吸油了。"
+  },
+  {
+    id: 27, name: "炝莲白", cat: "素菜", emoji: "🥬",
+    time: "8分钟", diff: "easy", spicy: "🌶️",
+    tag: "快手小炒",
+    img: "images/qiang_lianbai.jpg",
+    desc: "圆白菜脆嫩，干辣椒炝香，简单却美味",
+    ingredients: [{name:"圆白菜", amt:"半个"}, {name:"干辣椒", amt:"5个"}, {name:"花椒", amt:"1茶匙"}, {name:"盐", amt:"适量"}, {name:"醋", amt:"几滴"}, {name:"蒜末", amt:"适量"}],
+    steps: ["手撕圆白菜叶洗净控水","干辣椒切段","热油爆香干辣椒花椒","大火下白菜快速翻炒","沿锅边滴几滴醋","加盐炒匀即出锅"],
+    tips: "手撕比刀切的口感更好。大火快炒保持脆度。"
+  },
+  {
+    id: 28, name: "干煸四季豆", cat: "素菜", emoji: "🫘",
+    time: "15分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "外焦里嫩",
+    img: "images/ganbian_sijidou.jpg",
+    desc: "四季豆表皮皱缩，干香下饭",
+    ingredients: [{name:"四季豆", amt:"300g"}, {name:"肉末", amt:"50g"}, {name:"榨菜末", amt:"1勺"}, {name:"干辣椒", amt:"5个"}, {name:"蒜末", amt:"适量"}, {name:"盐", amt:"适量"}],
+    steps: ["四季豆掐头尾折段","少油炸至表面起皱捞出","锅留底油炒肉末榨菜","加干辣椒蒜末","倒入四季豆","加盐翻炒均匀"],
+    tips: "四季豆一定要炸熟！生的四季豆有毒。"
+  },
+  {
+    id: 29, name: "麻婆茄子", cat: "素菜", emoji: "🍆",
+    time: "20分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "素版经典",
+    img: "images/mapo_qiezi.jpg",
+    desc: "借鉴麻婆豆腐的做法做茄子，香辣软糯",
+    ingredients: [{name:"长茄子", amt:"2根"}, {name:"肉末", amt:"80g"}, {name:"豆瓣酱", amt:"2勺"}, {name:"蒜末", amt:"适量"}, {name:"花椒粉", amt:"1茶匙"}],
+    steps: ["茄子切条过油备用","炒肉末加豆瓣酱出红油","加蒜末炒香","放茄条轻轻翻动","少量水焖2分钟","撒花椒粉葱花出锅"],
+    tips: "茄子过油后口感更好。动作轻柔避免茄子烂掉。"
+  },
+  {
+    id: 30, name: "蒜泥黄瓜", cat: "素菜", emoji: "🥒",
+    time: "5分钟", diff: "easy", spicy: "",
+    tag: "清爽解腻",
+    img: "images/suanni_huanggua.jpg",
+    desc: "清脆爽口，蒜香扑鼻，夏天必备",
+    ingredients: [{name:"黄瓜", amt:"2根"}, {name:"蒜泥", amt:"3勺"}, {name:"辣椒油", amt:"1勺"}, {name:"生抽", amt:"1勺"}, {name:"醋", amt:"1勺"}, {name:"香油", amt:"少许"}],
+    steps: ["黄瓜拍碎切段","放大碗中加所有调料","拌匀即可直接食用","冷藏后味道更好"],
+    tips: "拍碎比切的更有味。冷藏半小时更入味。"
+  },
+
+  // ===== 汤类 =====
+  {
+    id: 13, name: "开水白菜", cat: "汤类", emoji: "🥬",
+    time: "90分钟", diff: "hard", spicy: "",
+    tag: "功夫名菜",
+    img: "images/kaishui_baicai.jpg",
+    desc: "看似清淡实为浓汤，国宴级川菜",
+    ingredients: [{name:"白菜心", amt:"300g"}, {name:"老母鸡", amt:"半只"}, {name:"猪肘骨", amt:"300g"}, {name:"火腿", amt:"50g"}, {name:"盐", amt:"适量"}, {name:"料酒", amt:"适量"}],
+    steps: ["鸡骨肘骨焯水去血沫","加清水大火转小火慢炖2小时","纱布过滤得清澈高汤","白菜心焯熟整形","高汤煨白菜心","点缀火腿片"],
+    tips: "汤要清澈见底才算成功。这是最考验功力的川菜之一。"
+  },
+  {
+    id: 16, name: "酸菜鱼", cat: "汤类", emoji: "🐟",
+    time: "35分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "酸辣鲜嫩",
+    img: "images/suancai_yu.jpg",
+    desc: "鱼片嫩滑，酸菜爽口，汤汁鲜美",
+    ingredients: [{name:"草鱼/黑鱼", amt:"1条"}, {name:"泡酸菜", amt:"200g"}, {name:"泡椒", amt:"5个"}, {name:"蛋清淀粉", amt:"各1份"}, {name:"姜片蒜片", amt:"适量"}, {name:"胡椒粉", amt:"适量"}],
+    steps: ["鱼去骨片薄片加料腌制","鱼骨煎至金黄","加酸菜泡椒炒香","加水熬汤过滤","汤沸后下鱼片","变白立刻撒葱花上桌"],
+    tips: "黑鱼肉质更紧实适合片鱼片。鱼片薄如纸最好。"
+  },
+  {
+    id: 31, name: "番茄牛腩汤", cat: "汤类", emoji: "🍅",
+    time: "90分钟", diff: "med", spicy: "",
+    tag: "酸甜暖胃",
+    img: "images/fanqie_niuwan.jpg",
+    desc: "牛肉酥烂，番茄酸甜，汤浓味美",
+    ingredients: [{name:"牛腩", amt:"500g"}, {name:"番茄", amt:"4个"}, {name:"胡萝卜", amt:"1根"}, {name:"洋葱", amt:"半个"}, {name:"姜片", amt:"适量"}, {name:"盐", amt:"适量"}],
+    steps: ["牛腩切块焯水去血沫","番茄去皮切块","牛腩加姜片炖60分钟","加番茄继续炖30分钟","最后加胡萝卜块","加盐调味即可"],
+    tips: "多放几个番茄，汤会更红更浓。"
+  },
+  {
+    id: 32, name: "蹄花汤", cat: "汤类", emoji: "🐷",
+    time: "180分钟", diff: "med", spicy: "",
+    tag: "美容养颜",
+    img: "images/tihua_tang.jpg",
+    desc: "猪蹄软糯，雪豆绵密，满满的胶原蛋白",
+    ingredients: [{name:"猪蹄", amt:"2只"}, {name:"雪豆/芸豆", amt:"100g"}, {name:"姜片", amt:"适量"}, {name:"花椒", amt:"少许"}, {name:"白胡椒", amt:"适量"}, {name:"盐", amt:"适量"}],
+    steps: ["猪蹄洗净拔毛焯水","雪豆提前浸泡4小时","猪蹄加姜片花椒炖煮","1小时后加入雪豆","继续炖1小时至软烂","加盐和白胡椒调味"],
+    tips: "雪豆要先泡发。蘸海椒面吃才是成都人的吃法。"
+  },
+  {
+    id: 33, name: "酸萝卜老鸭汤", cat: "汤类", emoji: "🦆",
+    time: "120分钟", diff: "med", spicy: "🌶️",
+    tag: "开胃滋补",
+    img: "images/suanluobo_laoya.jpg",
+    desc: "酸萝卜开胃，鸭肉滋补，汤鲜味美",
+    ingredients: [{name:"老鸭", amt:"半只"}, {name:"酸萝卜", amt:"200g"}, {name:"泡椒", amt:"3个"}, {name:"姜片", amt:"适量"}, {name:"枸杞", amt:"1把"}, {name:"盐", amt:"适量"}],
+    steps: ["鸭子洗净斩件焯水","酸萝卜切片","锅中炒香姜片和酸萝卜","加清水和鸭肉","大火烧开转小火炖90分钟","加盐枸杞即可"],
+    tips: "选老鸭子肉质紧实更好吃。酸萝卜是灵魂。"
+  },
+  {
+    id: 34, name: "冬瓜连锅汤", cat: "汤类", emoji: "🥣",
+    time: "40分钟", diff: "easy", spicy: "🌶️",
+    tag: "农家风味",
+    img: "images/donggua_lianguo.jpg",
+    desc: "一锅搞定，有肉有菜，省事又营养",
+    ingredients: [{name:"五花肉", amt:"200g"}, {name:"冬瓜", amt:"500g"}, {name:"豆瓣酱", amt:"1勺"}, {name:"姜片", amt:"适量"}, {name:"花椒", amt:"少许"}, {name:"蒜苗", amt:"适量"}],
+    steps: ["五花肉切片","冬瓜去皮切块","炒锅炒香豆瓣酱姜片","加水煮开放入五花肉","煮开后下冬瓜","煮至冬瓜透明撒蒜苗即可"],
+    tips: "可以加粉条一起煮，就是一顿完整的饭了。"
+  },
+
+  // ===== 凉菜类 =====
+  {
+    id: 3, name: "夫妻肺片", cat: "凉菜", emoji: "🥩",
+    time: "40分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "凉菜经典",
+    img: "images/fuqi_feipian.jpg",
+    desc: "红油浸润麻辣鲜香，牛肉与牛杂的完美搭配",
+    ingredients: [{name:"牛腱肉", amt:"300g"}, {name:"牛肚", amt:"100g"}, {name:"红油", amt:"3勺"}, {name:"花椒油", amt:"1勺"}, {name:"生抽", amt:"2勺"}, {name:"芝麻花生碎", amt:"适量"}],
+    steps: ["牛腱牛肚卤煮至熟透","放凉切薄片","调红油汁","摆盘淋汁","撒芝麻花生碎葱花"],
+    tips: "切片越薄越好。红油可加豆瓣炒制更香。"
+  },
+  {
+    id: 10, name: "口水鸡", cat: "凉菜", emoji: "🍗",
+    time: "40分钟", diff: "easy", spicy: "🌶️🌶️🌶️",
+    tag: "麻辣鲜嫩",
+    img: "images/koushui_ji.jpg",
+    desc: "鸡肉嫩滑红油浓郁让人口水直流",
+    ingredients: [{name:"整鸡/鸡腿", amt:"1只"}, {name:"红油", amt:"4勺"}, {name:"花椒油", amt:"2勺"}, {name:"芝麻酱", amt:"2勺"}, {name:"蒜泥花生碎", amt:"适量"}],
+    steps: ["鸡冷水下锅煮20分钟焖15分钟","捞出浸冰水使皮脆","斩件摆盘","调红油汁淋在鸡身上","撒花生碎芝麻葱花"],
+    tips: "冰水激一下鸡皮才爽脆！"
+  },
+  {
+    id: 12, name: "蒜泥白肉", cat: "凉菜", emoji: "🥩",
+    time: "30分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "香嫩可口",
+    img: "images/suanni_bairou.jpg",
+    desc: "白肉薄嫩蒜香浓郁入口即化",
+    ingredients: [{name:"猪后腿肉", amt:"400g"}, {name:"蒜泥", amt:"3勺"}, {name:"红油", amt:"3勺"}, {name:"生抽", amt:"2勺"}, {name:"黄瓜", amt:"1根"}, {name:"葱花", amt:"适量"}],
+    steps: ["猪肉加葱姜料酒煮熟","趁温热时切薄片","黄瓜片垫底","铺肉片","调蒜泥红油汁","淋在肉上撒葱花芝麻"],
+    tips: "蒜泥一定要现磨！袋装蒜泥差远了。"
+  },
+  {
+    id: 6, name: "四川泡菜", cat: "凉菜", emoji: "🥬",
+    time: "3天", diff: "easy", spicy: "🌶️",
+    tag: "开胃下饭",
+    img: "images/sichuan_paocai.jpg",
+    desc: "酸脆爽口四川人家家必备",
+    ingredients: [{name:"白萝卜", amt:"500g"}, {name:"圆白菜", amt:"300g"}, {name:"胡萝卜", amt:"200g"}, {name:"食盐", amt:"30g"}, {name:"白酒花椒辣椒", amt:"各适量"}],
+    steps: ["蔬菜洗净晾干","准备干净泡菜坛","调盐水煮沸放凉","坛底放香料","放入蔬菜倒盐水","密封室温发酵2-3天"],
+    tips: "取菜要用无油筷。泡菜水越陈越香。"
+  },
+  {
+    id: 35, name: "凉拌折耳根", cat: "凉菜", emoji: "🌿",
+    time: "5分钟", diff: "easy", spicy: "🌶️🌶️🌶️",
+    tag: "爱恨分明",
+    img: "images/liangban_zheergen.jpg",
+    desc: "爱的人欲罢不能恨的人闻之色变",
+    ingredients: [{name:"折耳根", amt:"200g"}, {name:"辣椒油", amt:"2勺"}, {name:"生抽", amt:"2勺"}, {name:"醋", amt:"1勺"}, {name:"蒜末", amt:"适量"}, {name:"香油", amt:"少许"}],
+    steps: ["折耳根摘成小段洗净","放大碗里加所有调料","拌匀即可食用"],
+    tips: "选嫩的折耳根口感更好。这是四川人的真爱。"
+  },
+  {
+    id: 36, name: "凉拌木耳", cat: "凉菜", emoji: "🍄",
+    time: "10分钟", diff: "easy", spicy: "🌶️",
+    tag: "脆嫩解腻",
+    img: "images/liangban_muer.jpg",
+    desc: "黑木耳脆嫩爽口，酸辣解腻",
+    ingredients: [{name:"黑木耳", amt:"150g"}, {name:"小米辣", amt:"3个"}, {name:"香菜", amt:"适量"}, {name:"生抽醋", amt:"各2勺"}, {name:"蒜泥", amt:"1勺"}, {name:"香油", amt:"适量"}],
+    steps: ["木耳泡发焯水过凉水","撕小朵","加切碎的小米辣和香菜","调入生抽醋蒜泥香油","拌匀即食"],
+    tips: "木耳焯水时间不宜过长，否则失去脆感。"
+  },
+
+  // ===== 小吃类 =====
+  {
+    id: 7, name: "担担面", cat: "小吃", emoji: "🍜",
+    time: "20分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "街头风味",
+    img: "images/dandan_mian.jpg",
+    desc: "麻酱浓香肉末鲜香一碗满足感十足",
+    ingredients: [{name:"细面条", amt:"200g"}, {name:"肉末", amt:"100g"}, {name:"芝麻酱", amt:"3勺"}, {name:"红油", amt:"2勺"}, {name:"花椒油", amt:"1勺"}, {name:"芽菜", amt:"适量"}, {name:"花生碎", amt:"适量"}],
+    steps: ["温水调开芝麻酱","调面酱汁(红油生抽醋花椒油)","肉末加豆瓣酱芽菜炒酥","面条煮熟控水","碗底放酱汁铺面","浇肉末撒花生碎葱花"],
+    tips: "芝麻酱要慢慢调开。肉末炒酥是精华！"
+  },
+  {
+    id: 14, name: "肥肠粉", cat: "小吃", emoji: "🍲",
+    time: "40分钟", diff: "med", spicy: "🌶️🌶️",
+    tag: "成都小吃",
+    img: "images/feichang_fen.jpg",
+    desc: "粉条滑嫩肥肠鲜香红油飘香",
+    ingredients: [{name:"猪大肠", amt:"300g"}, {name:"红薯粉", amt:"200g"}, {name:"豆瓣酱", amt:"2勺"}, {name:"花椒辣椒", amt:"适量"}, {name:"骨头汤", amt:"适量"}],
+    steps: ["大肠反复清洗加面粉醋搓洗","卤煮40分钟切段","粉条泡发","骨头汤加豆瓣调味","下粉条煮3分钟","加肥肠淋红油"],
+    tips: "大肠清洗是成败关键！"
+  },
+  {
+    id: 15, name: "豆花饭", cat: "小吃", emoji: "🥣",
+    time: "10分钟", diff: "easy", spicy: "🌶️",
+    tag: "简单美味",
+    img: "images/douhua_fan.jpg",
+    desc: "嫩滑豆花配香辣蘸水配白饭",
+    ingredients: [{name:"嫩豆腐", amt:"400g"}, {name:"红油", amt:"3勺"}, {name:"豆豉", amt:"1勺"}, {name:"葱花蒜", amt:"适量"}, {name:"生抽", amt:"2勺"}, {name:"花椒油", amt:"1勺"}],
+    steps: ["豆腐舀入碗中","豆豉切碎","调蘸水","淋在豆花上","配白米饭"],
+    tips: "加折耳根更正宗。"
+  },
+  {
+    id: 37, name: "钟水饺", cat: "小吃", emoji: "🥟",
+    time: "30分钟", diff: "easy", spicy: "🌶️🌶️",
+    tag: "红油水饺",
+    img: "images/zhong_shuijiao.jpg",
+    desc: "红油甜水饺，皮薄馅大，甜辣交织",
+    ingredients: [{name:"饺子皮", amt:"适量"}, {name:"猪肉馅", amt:"300g"}, {name:"红油", amt:"3勺"}, {name:"复制酱油", amt:"2勺"}, {name:"蒜泥", amt:"1勺"}, {name:"白糖", amt:"1勺"}],
+    steps: ["猪肉馅加葱姜水搅至上劲","包成饺子形状","水煮饺子至浮起","碗中放红油酱油蒜泥糖","舀饺子汤冲开","盛入饺子即可"],
+    tips: "复制酱油=红糖+酱油+香料熬制。甜中带辣才是特色。"
+  },
+  {
+    id: 38, name: "龙抄手", cat: "小吃", emoji: "🥟",
+    time: "40分钟", diff: "med", spicy: "🌶️",
+    tag: "皮薄馅嫩",
+    img: "images/long_chaoshou.jpg",
+    desc: "成都著名小吃，馄饨的川式做法",
+    ingredients: [{name:"抄手皮", amt:"适量"}, {name:"猪肉虾仁", amt:"300g"}, {name:"鸡蛋清", amt:"1个"}, {name:"鸡汤", amt:"适量"}, {name:"紫菜虾皮", amt:"适量"}, {name:"红油", amt:"1勺"}],
+    steps: ["猪肉虾仁剁茸加蛋清搅拌","包成抄手","鸡汤煮沸下抄手","抄手浮起后装碗","撒紫菜虾皮","淋少许红油"],
+    tips: "馅要打得有弹性。鸡汤打底才鲜美。"
+  },
+  {
+    id: 39, name: "赖汤圆", cat: "小吃", emoji: "⚪",
+    time: "30分钟", diff: "easy", spicy: "",
+    tag: "香甜软糯",
+    img: "images/lai_tangyuan.jpg",
+    desc: "成都百年老字号，糯米团子包芝麻馅",
+    ingredients: [{name:"糯米粉", amt:"300g"}, {name:"黑芝麻", amt:"100g"}, {name:"猪油白糖", amt:"各2勺"}, {name:"醪糟", amt:"适量"}, {name:"红糖", amt:"适量"}],
+    steps: ["糯米粉加热水和成面团","黑芝麻磨碎加猪油白糖做馅","包成汤圆","水煮汤圆至浮起","碗中放醪糟红糖","盛入汤圆"],
+    tips: "面团不要太硬。馅心要流沙状才正宗。"
+  },
+  {
+    id: 40, name: "串串香", cat: "小吃", emoji: "🍢",
+    time: "30分钟", diff: "easy", spicy: "🌶️🌶️🌶️",
+    tag: "街头王者",
+    img: "images/chuanchuan_xiang.jpg",
+    desc: "万物皆可串，涮完蘸干碟美滋滋",
+    ingredients: [{name:"各类食材", amt:"随意"}, {name:"火锅底料", amt:"1袋"}, {name:"辣椒面花生碎", amt:"适量"}, {name:"孜然粉", amt:"适量"}],
+    steps: ["各种食材穿竹签","锅中加底料和水煮沸","涮串串至熟","调干碟：辣椒面花生碎孜然","蘸着吃"],
+    tips: "想吃什么串什么。干碟是灵魂！"
+  },
+  {
+    id: 41, name: "红糖糍粑", cat: "小吃", emoji: "🍡",
+    time: "25分钟", diff: "easy", spicy: "",
+    tag: "甜品小食",
+    img: "images/hongtang_ciba.jpg",
+    desc: "外酥内糯红糖香甜，餐后完美收尾",
+    ingredients: [{name:"糯米粉", amt:"200g"}, {name:"红糖", amt:"50g"}, {name:"黄豆粉", amt:"2勺"}, {name:"食用油", amt:"适量"}],
+    steps: ["糯米粉加水和成软面团","分成小剂子压扁","平底锅刷油煎至两面金黄","红糖加少许水化开","糍粑淋红糖浆","撒黄豆粉即可"],
+    tips: "面团要软才糯。煎的时候火不要太大。"
+  },
+  {
+    id: 42, name: "冰粉", cat: "小吃", emoji: "🧊",
+    time: "20分钟(不含凝固)", diff: "easy", spicy: "",
+    tag: "夏日清凉",
+    img: "images/bingfen.jpg",
+    desc: "冰凉爽滑，红糖甜香，夏天的救星",
+    ingredients: [{name:"冰粉粉/冰籽", amt:"适量"}, {name:"红糖", amt:"50g"}, {name:"葡萄干", amt:"1勺"}, {name:"山楂碎", amt:"1勺"}, {name:"芝麻花生碎", amt:"1勺"}, {name:"水果丁", amt:"适量"}],
+    steps: ["冰粉粉加水煮沸搅匀","倒入容器静置凝固","红糖加温水化成糖水","冰粉挖球或切块","加红糖水","撒各种小料水果即可"],
+    tips: "用冰籽手搓的更正宗。配料越丰富越好。"
+  },
+
+  // ===== 火锅类 =====
+  {
+    id: 8, name: "川式火锅", cat: "火锅", emoji: "🫕",
+    time: "45分钟", diff: "easy", spicy: "🌶️🌶️🌶️",
+    tag: "必吃经典",
+    img: "images/chuanshi_huoguo.jpg",
+    desc: "红油翻滚麻辣鲜香一锅打尽",
+    ingredients: [{name:"牛油", amt:"100g"}, {name:"郫县豆瓣", amt:"3勺"}, {name:"干辣椒", amt:"30g"}, {name:"花椒", amt:"15g"}, {name:"火锅底料", amt:"1包"}, {name:"各类涮菜", amt:"随意"}],
+    steps: ["牛油化开炒豆瓣出红油","加干辣椒花椒炒香","加底料和高汤","大火烧开后转小火","涮各种食材至熟","沾香油蒜泥碟食用"],
+    tips: "毛肚七上八下，牛肉十秒即熟。"
+  }
+];
+
+let favorites = JSON.parse(localStorage.getItem('sichuan_favs') || '[]');
+let currentFilter = 'all';
+let currentSearch = '';
+let currentDetailId = null;
+let randomPickId = null;
+let dailyPick = 1;
+
+// 初始化
+window.onload = function() {
+  setDailyPick();
+  renderRecipes(getFilteredRecipes());
+};
+
+function setDailyPick() {
+  const idx = Math.floor(Math.random() * recipes.length);
+  const pick = recipes[idx];
+  dailyPick = pick.id;
+  document.getElementById('daily-name').textContent = pick.name;
+  document.getElementById('daily-desc').textContent = pick.desc.substring(0, 18) + '...';
+  const imgEl = document.getElementById('daily-img');
+  imgEl.textContent = pick.emoji;
+}
+
+function getFilteredRecipes() {
+  return recipes.filter(r => {
+    const matchCat = currentFilter === 'all' || r.cat === currentFilter;
+    const matchSearch = !currentSearch || r.name.includes(currentSearch) || r.tag.includes(currentSearch);
+    return matchCat && matchSearch;
+  });
+}
+
+function renderRecipes(list) {
+  const grid = document.getElementById('recipes-grid');
+  if (list.length === 0) {
+    grid.innerHTML = '<p style="color:#999;text-align:center;padding:40px;grid-column:span 2">没有找到相关菜谱 😢</p>';
+    return;
+  }
+  grid.innerHTML = list.map((r, i) => {
+    const isFav = favorites.includes(r.id);
+    const inCart = cart.some(c => c.id === r.id);
+    return `
+    <div class="recipe-card" style="animation-delay:${i*0.06}s" onclick="openDetail(${r.id})">
+      <div class="card-img" style="background: linear-gradient(135deg, ${getCardGradient(r.cat)}, ${getCardGradient2(r.cat)})">
+        <img src="${r.img}" alt="${r.name}" onerror="this.style.display='none'">
+        ${r.spicy ? `<div class="spicy-badge">${r.spicy}</div>` : ''}
+        <button class="fav-btn" onclick="toggleFav(event,${r.id})">${isFav ? '❤️' : '🤍'}</button>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${r.name}</div>
+        <div class="card-meta">
+          <span class="card-time">⏱️ ${r.time}</span>
+          <span class="card-diff ${getDiffClass(r.diff)}">${getDiffLabel(r.diff)}</span>
+        </div>
+        <div class="card-tag" style="margin-top:4px;font-size:11px;color:#999">${r.tag}</div>
+        <div class="card-price-tag">¥0</div>
+        <div style="margin-top:6px">
+          <button class="add-cart-btn ${inCart ? 'added' : ''}" onclick="event.stopPropagation();toggleCart(${r.id})">
+            ${inCart ? '✅ 已加入购物车' : '🛒 加入购物车'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getDiffClass(d) {
+  return d === 'easy' ? 'diff-easy' : d === 'med' ? 'diff-med' : 'diff-hard';
+}
+function getDiffLabel(d) {
+  return d === 'easy' ? '简单' : d === 'med' ? '适中' : '有难度';
+}
+
+// 分类渐变配色
+const catColors = {
+  '荤菜': { from: '#FFE5E5', to: '#FFCCCC' },
+  '素菜': { from: '#E8F5E9', to: '#C8E6C9' },
+  '汤类': { from: '#E3F2FD', to: '#BBDEFB' },
+  '小吃': { from: '#FFF3E0', to: '#FFE0B2' },
+  '火锅': { from: '#FCE4EC', to: '#F8BBD0' },
+  '凉菜': { from: '#E0F7FA', to: '#B2EBF2' },
+};
+function getCardGradient(cat) { return (catColors[cat] || catColors['荤菜']).from; }
+function getCardGradient2(cat) { return (catColors[cat] || catColors['荤菜']).to; }
+
+function filterCat(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderRecipes(getFilteredRecipes());
+}
+
+function searchRecipes(val) {
+  currentSearch = val.trim();
+  renderRecipes(getFilteredRecipes());
+}
+
+function toggleFav(e, id) {
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  if (favorites.includes(id)) {
+    favorites = favorites.filter(f => f !== id);
+    btn.textContent = '🤍';
+  } else {
+    favorites.push(id);
+    btn.textContent = '❤️';
+    btn.style.transform = 'scale(1.4)';
+    setTimeout(() => btn.style.transform = '', 300);
+  }
+  localStorage.setItem('sichuan_favs', JSON.stringify(favorites));
+}
+
+function openDetailById(id) {
+  openDetail(id);
+}
+
+function openDetail(id) {
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+  currentDetailId = id;
+
+  const imgWrap = document.getElementById('detail-img-wrap');
+  imgWrap.innerHTML = `<img src="${r.img}" alt="${r.name}" style="width:100%;height:240px;object-fit:cover;border-radius:24px 24px 0 0">`;
+  
+  document.getElementById('detail-title').textContent = r.name;
+  
+  const badges = document.getElementById('detail-badges');
+  badges.innerHTML = `
+    <span class="d-badge d-badge-red">🌶️ ${r.spicy || '不辣'}</span>
+    <span class="d-badge d-badge-org">⏱️ ${r.time}</span>
+    <span class="d-badge d-badge-grn">${getDiffLabel(r.diff)}</span>
+    <span class="d-badge d-badge-blue">${r.cat}</span>
+  `;
+  
+  document.getElementById('detail-ingredients').innerHTML = r.ingredients.map(ing => `
+    <div class="ingredient-item">
+      <div class="ing-name">${ing.name}</div>
+      <div class="ing-amount">${ing.amt}</div>
+    </div>
+  `).join('');
+  
+  document.getElementById('detail-steps').innerHTML = r.steps.map((s, i) => `
+    <li class="step-item">
+      <div class="step-num">${i+1}</div>
+      <div class="step-text">${s}</div>
+    </li>
+  `).join('');
+  
+  document.getElementById('detail-tips').textContent = r.tips;
+
+  // 更新详情页购物车按钮状态
+  const cartBtn = document.getElementById('detail-cart-btn');
+  const inCartDetail = cart.some(c => c.id === id);
+  if (inCartDetail) {
+    cartBtn.innerHTML = '✅ 已加入购物车 🎉';
+    cartBtn.classList.add('added');
+  } else {
+    cartBtn.innerHTML = '🛒 加入购物车（免费）';
+    cartBtn.classList.remove('added');
+  }
+
+  document.getElementById('detail-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail(e) {
+  if (e.target === document.getElementById('detail-overlay')) closeDetailBtn();
+}
+function closeDetailBtn() {
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showRandom() {
+  const idx = Math.floor(Math.random() * recipes.length);
+  const r = recipes[idx];
+  randomPickId = r.id;
+  
+  const imgWrap = document.getElementById('random-img-wrap');
+  imgWrap.innerHTML = `<img src="${r.img}" alt="${r.name}" style="width:100%;height:200px;object-fit:cover;border-radius:16px">`;
+  
+  document.getElementById('random-title').textContent = r.name;
+  document.getElementById('random-desc').textContent = r.desc;
+  document.getElementById('random-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRandom(e) {
+  if (e.target === document.getElementById('random-overlay')) {
+    document.getElementById('random-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function openRandomDetail() {
+  document.getElementById('random-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (randomPickId) openDetail(randomPickId);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  if (tab === 'fav') {
+    const favRecipes = recipes.filter(r => favorites.includes(r.id));
+    if (favRecipes.length === 0) {
+      document.getElementById('fav-grid').innerHTML = '';
+      document.getElementById('fav-empty').style.display = 'block';
+    } else {
+      document.getElementById('fav-empty').style.display = 'none';
+      document.getElementById('fav-grid').innerHTML = favRecipes.map((r,i) => {
+        return `
+        <div class="recipe-card" style="animation-delay:${i*0.06}s" onclick="openDetail(${r.id})">
+          <div class="card-img">
+            <img src="${r.img}" alt="${r.name}" onerror="this.style.display='none'">
+            ${r.spicy ? `<div class="spicy-badge">${r.spicy}</div>` : ''}
+            <button class="fav-btn" onclick="toggleFav(event,${r.id})">❤️</button>
+          </div>
+          <div class="card-body">
+            <div class="card-name">${r.name}</div>
+            <div class="card-meta">
+              <span class="card-time">⏱️ ${r.time}</span>
+              <span class="card-diff ${getDiffClass(r.diff)}">${getDiffLabel(r.diff)}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  if (tab === 'cart') {
+    renderCart();
+  }
+}
+
+// ============== 购物车功能 ==============
+
+let cart = JSON.parse(localStorage.getItem('sichuan_cart') || '[]');
+
+function saveCart() {
+  localStorage.setItem('sichuan_cart', JSON.stringify(cart));
+  updateCartBadge();
+}
+
+function updateCartBadge() {
+  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = totalQty > 0 ? totalQty > 99 ? '99+' : totalQty : '';
+}
+
+function toggleCart(id) {
+  const idx = cart.findIndex(c => c.id === id);
+  if (idx >= 0) {
+    cart.splice(idx, 1);
+  } else {
+    cart.push({ id: id, qty: 1 });
+  }
+  saveCart();
+  renderRecipes(getFilteredRecipes());
+  // 如果在购物车页面则刷新
+  if (document.getElementById('page-cart').classList.contains('active')) {
+    renderCart();
+  }
+}
+
+function toggleCartFromDetail() {
+  if (!currentDetailId) return;
+  const r = recipes.find(x => x.id === currentDetailId);
+  if (!r) return;
+
+  const idx = cart.findIndex(c => c.id === currentDetailId);
+  const btn = document.getElementById('detail-cart-btn');
+
+  if (idx >= 0) {
+    cart.splice(idx, 1);
+    btn.innerHTML = '🛒 加入购物车（免费）';
+    btn.classList.remove('added');
+  } else {
+    cart.push({ id: currentDetailId, qty: 1 });
+    btn.innerHTML = '✅ 已加入购物车 🎉';
+    btn.classList.add('added');
+    // 动画效果
+    btn.style.transform = 'scale(1.05)';
+    setTimeout(() => btn.style.transform = '', 200);
+  }
+  saveCart();
+  renderRecipes(getFilteredRecipes());
+}
+
+function changeCartQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    cart = cart.filter(c => c.id !== id);
+  }
+  saveCart();
+  renderCart();
+}
+
+function removeCartItem(id) {
+  cart = cart.filter(c => c.id !== id);
+  saveCart();
+  renderCart();
+  // 同步刷新首页卡片按钮状态
+  renderRecipes(getFilteredRecipes());
+}
+
+function clearCart() {
+  if (cart.length === 0) return;
+  if (!confirm('确定要清空购物车吗？')) return;
+  cart = [];
+  saveCart();
+  renderCart();
+  renderRecipes(getFilteredRecipes());
+}
+
+function renderCart() {
+  const listEl = document.getElementById('cart-list');
+  const emptyEl = document.getElementById('cart-empty');
+  const footerEl = document.getElementById('cart-footer');
+  const totalItemsEl = document.getElementById('cart-total-items');
+  const countLabelEl = document.getElementById('cart-count-label');
+
+  if (cart.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    footerEl.style.display = 'none';
+    totalItemsEl.textContent = '0';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  footerEl.style.display = 'flex';
+
+  let totalQty = 0;
+  listEl.innerHTML = cart.map((item, i) => {
+    const r = recipes.find(x => x.id === item.id);
+    if (!r) return '';
+    totalQty += item.qty;
+    return `
+    <div class="cart-item" style="animation-delay:${i*0.06}s">
+      <img class="cart-item-img" src="${r.img}" alt="${r.name}" onerror="this.style.display='none'">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${r.name}</div>
+        <div class="cart-item-price">¥0</div>
+        <div class="cart-item-cat">${r.cat} · ${r.time}</div>
+      </div>
+      <div class="qty-control">
+        <button class="qty-btn" onclick="changeCartQty(${r.id}, -1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="changeCartQty(${r.id}, 1)">+</button>
+      </div>
+      <button class="remove-cart-item" onclick="removeCartItem(${r.id})">✕</button>
+    </div>`;
+  }).join('');
+
+  totalItemsEl.textContent = totalQty;
+  countLabelEl.textContent = `共 ${totalQty} 道菜`;
+}
+
+function doCheckout() {
+  if (cart.length === 0) return;
+  // 汇总已选菜品名称
+  const dishNames = cart.map(item => {
+    const r = recipes.find(x => x.id === item.id);
+    return r ? `${r.name}${item.qty > 1 ? '×' + item.qty : ''}` : '';
+  }).filter(Boolean).join('、');
+
+  const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
+  alert(`🎉 下单成功！\n\n您选择了 ${totalCount} 道川菜：\n${dishNames}\n\n💰 合计：¥0（免费家厨）\n\n祝用餐愉快！❤️`);
+
+  // 清空购物车
+  cart = [];
+  saveCart();
+  renderCart();
+  renderRecipes(getFilteredRecipes());
+}
+
+// 初始化购物车角标
+updateCartBadge();
+</script>
+</body>
+</html>
